@@ -1,23 +1,21 @@
 export default async function handler(req, res) {
-  const { query } = req.query;
+  const apiKey = process.env.NEWS_API_KEY;
+  const query = req.query.query || "India";
 
-  if (!query) {
-    return res.status(400).json({ error: "Query is required" });
+  if (!apiKey) {
+    return res.status(500).json({ error: "API key not set in environment variables" });
   }
 
-  const apiKey = process.env.NEWS_API_KEY;
-  const apiUrl = `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&apiKey=${apiKey}`;
-
   try {
-    const response = await fetch(apiUrl);
+    const response = await fetch(`https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&apiKey=${apiKey}`);
     const data = await response.json();
 
-    if (!response.ok) {
-      return res.status(response.status).json({ error: data.message || "NewsAPI error" });
+    if (response.status !== 200) {
+      return res.status(response.status).json({ error: data.message || "News API error" });
     }
 
-    res.status(200).json(data);
+    return res.status(200).json(data);
   } catch (error) {
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 }
