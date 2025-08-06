@@ -1,14 +1,8 @@
-import config from './config.js';
-
-const API_KEY = config.API_KEY;
-const url = config.baseUrl + "/everything?q=";
-
-
 window.addEventListener("load", () => fetchNews("India"));
 
 async function fetchNews(query) {
     try {
-        const res = await fetch(`${url}${query}&apiKey=${API_KEY}`);
+        const res = await fetch(`/api/news?query=${encodeURIComponent(query)}`);
         const data = await res.json();
         bindData(data.articles);
     } catch (err) {
@@ -61,13 +55,11 @@ function onNavItemClick(id) {
     curSelectedNav.classList.add("active");
 }
 
-
 document.getElementById("ipl")?.addEventListener("click", () => onNavItemClick("ipl"));
 document.getElementById("finance")?.addEventListener("click", () => onNavItemClick("finance"));
 document.getElementById("politics")?.addEventListener("click", () => onNavItemClick("politics"));
 document.getElementById("technology")?.addEventListener("click", () => onNavItemClick("technology"));
 document.getElementById("business")?.addEventListener("click", () => onNavItemClick("business"));
-
 
 const searchButton = document.getElementById("search-button");
 const searchText = document.getElementById("search-text");
@@ -80,7 +72,7 @@ searchButton.addEventListener("click", () => {
     curSelectedNav = null;
 });
 
-// Optional reload function
 function reload() {
     window.location.reload();
 }
+
