@@ -3,10 +3,27 @@ window.addEventListener("load", () => fetchNews("India"));
 async function fetchNews(query) {
     try {
         const res = await fetch(`/api/news?query=${encodeURIComponent(query)}`);
+
+        if (!res.ok) {
+            if (res.status === 429) {
+                alert(" Too many requests to the News API. Please try again later.");
+            } else {
+                alert(` Error: ${res.status} ${res.statusText}`);
+            }
+            return;
+        }
+
         const data = await res.json();
+
+        if (!data.articles || !Array.isArray(data.articles)) {
+            alert(" No news articles found. Try another search.");
+            return;
+        }
+
         bindData(data.articles);
     } catch (err) {
         console.error("Error fetching news:", err);
+        alert(" Something went wrong while fetching news. Check your connection or try again.");
     }
 }
 
@@ -75,4 +92,3 @@ searchButton.addEventListener("click", () => {
 function reload() {
     window.location.reload();
 }
-
